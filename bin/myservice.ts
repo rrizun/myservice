@@ -6,7 +6,7 @@ import { MyserviceStack } from '../lib/myservice-stack';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import { Construct, Stack, StackProps, SecretValue, Stage, StageProps } from '@aws-cdk/core';
-import { CdkPipeline, SimpleSynthAction } from "@aws-cdk/pipelines";
+import { CdkPipeline, SimpleSynthAction, ShellScriptAction } from "@aws-cdk/pipelines";
 
 export class CdkpipelinesDemoStage extends Stage {
     // public readonly urlOutput: CfnOutput;
@@ -58,6 +58,20 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
       const preProdCdkStage = pipeline.addApplicationStage(new CdkpipelinesDemoStage(this, 'PreProd', {
         env: { account: '343892718819', region: 'us-east-1' }
       }));
+
+      preProdCdkStage.addActions(new ShellScriptAction({
+        actionName: 'TestService',
+        useOutputs: {
+          // Get the stack Output from the Stage and make it available in
+          // the shell script as $ENDPOINT_URL.
+        //   ENDPOINT_URL: pipeline.stackOutput(preprod.urlOutput),
+        },
+        commands: [
+          // Use 'curl' to GET the given URL and fail if it returns an error
+          'echo hello'
+        ],
+      }));
+
       preProdCdkStage.addManualApprovalAction()
 
 
