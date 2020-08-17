@@ -5,11 +5,11 @@ import { MyserviceStack } from '../lib/myservice-stack';
 
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
-import { Construct, Stack, StackProps, SecretValue, Stage, StageProps } from '@aws-cdk/core';
+import { Construct, Stack, StackProps, SecretValue, Stage, StageProps, CfnOutput } from '@aws-cdk/core';
 import { CdkPipeline, SimpleSynthAction, ShellScriptAction } from "@aws-cdk/pipelines";
 
 export class CdkpipelinesDemoStage extends Stage {
-    // public readonly urlOutput: CfnOutput;
+    public readonly urlOutput: CfnOutput;
     
     constructor(scope: Construct, id: string, props?: StageProps) {
       super(scope, id, props);
@@ -17,7 +17,7 @@ export class CdkpipelinesDemoStage extends Stage {
       const service = new MyserviceStack(this, 'Myservice');
 
     //   // Expose CdkpipelinesDemoStack's output one level higher
-    //   this.urlOutput = service.urlOutput;
+        this.urlOutput = service.urlOutput;
     }
 }
 
@@ -55,24 +55,25 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
       // This is where we add the application stages
       // ...
 
-      const preProdCdkStage = pipeline.addApplicationStage(new CdkpipelinesDemoStage(this, 'PreProd', {
+      const preprodStage = new CdkpipelinesDemoStage(this, 'PreProd', {
         env: { account: '343892718819', region: 'us-east-1' }
-      }));
+      })
+      const preprodCdkStage = pipeline.addApplicationStage(preprodStage);
 
-      preProdCdkStage.addActions(new ShellScriptAction({
+      preprodCdkStage.addActions(new ShellScriptAction({
         actionName: 'TestService',
         useOutputs: {
           // Get the stack Output from the Stage and make it available in
           // the shell script as $ENDPOINT_URL.
-        //   ENDPOINT_URL: pipeline.stackOutput(preprod.urlOutput),
+          ENDPOINT_URL: pipeline.stackOutput(preprodStage.urlOutput),
         },
         commands: [
           // Use 'curl' to GET the given URL and fail if it returns an error
-          'echo hello'
+          'echo hello $ENDPOINT_URL'
         ],
       }));
 
-      preProdCdkStage.addManualApprovalAction()
+      preprodCdkStage.addManualApprovalAction()
 
 
 
