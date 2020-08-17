@@ -15,7 +15,7 @@ export class CdkpipelinesDemoStage extends Stage {
       super(scope, id, props);
   
       const service = new MyserviceStack(this, 'Myservice');
-      
+
     //   // Expose CdkpipelinesDemoStack's output one level higher
     //   this.urlOutput = service.urlOutput;
     }
@@ -32,7 +32,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
         // The pipeline name
         pipelineName: 'MyServicePipeline',
         cloudAssemblyArtifact,
-  
+
         // Where the source can be found
         sourceAction: new codepipeline_actions.GitHubSourceAction({
           actionName: 'GitHub',
@@ -55,10 +55,12 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
       // This is where we add the application stages
       // ...
 
-      pipeline.addApplicationStage(new CdkpipelinesDemoStage(this, 'PreProd', {
+      const preProdCdkStage = pipeline.addApplicationStage(new CdkpipelinesDemoStage(this, 'PreProd', {
         env: { account: '343892718819', region: 'us-east-1' }
       }));
-      
+
+      preProdCdkStage.addManualApprovalAction()
+            
     }
   }
   
