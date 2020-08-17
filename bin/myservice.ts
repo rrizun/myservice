@@ -46,7 +46,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
          synthAction: SimpleSynthAction.standardNpmSynth({
            sourceArtifact,
            cloudAssemblyArtifact,
-           
+
            // We need a build step to compile the TypeScript Lambda
         //    buildCommand: 'npm run build'
          }),
@@ -58,9 +58,14 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
       const preProdCdkStage = pipeline.addApplicationStage(new CdkpipelinesDemoStage(this, 'PreProd', {
         env: { account: '343892718819', region: 'us-east-1' }
       }));
-
       preProdCdkStage.addManualApprovalAction()
-            
+
+
+
+      const prodCdkStage = pipeline.addApplicationStage(new CdkpipelinesDemoStage(this, 'Prod', {
+        env: { account: '343892718819', region: 'us-east-1' }
+      }));
+
     }
   }
   
