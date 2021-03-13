@@ -85,5 +85,9 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
 const app = new cdk.App();
 new CdkpipelinesDemoPipelineStack(app, 'CdkpipelinesDemoPipelineStack', {
     env: { account: '343892718819', region: 'us-east-1' },
-  });
-  
+});
+
+// # https://aws.amazon.com/blogs/developer/cdk-pipelines-continuous-delivery-for-aws-cdk-applications/
+new CdkpipelinesDemoStage(app, 'Dev', {
+    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+});
