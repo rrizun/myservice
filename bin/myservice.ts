@@ -73,7 +73,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
         ],
       }));
 
-      preprodCdkStage.addManualApprovalAction()
+      // preprodCdkStage.addManualApprovalAction()
 
       const prodCdkStage = pipeline.addApplicationStage(new CdkpipelinesDemoStage(this, 'Prod', {
         env: { account: '343892718819', region: 'us-east-1' }
