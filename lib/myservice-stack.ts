@@ -19,8 +19,8 @@ export class MyserviceStack extends cdk.Stack {
     myTopic.addSubscription(new subscriptions.SqsSubscription(myQueue));
 
     const vpc = new ec2.Vpc(this, "MyVpc", {maxAzs:1})
-    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.STANDARD5, ec2.InstanceSize.LARGE);
-    const host = new ec2.BastionHostLinux(this, 'BastionHost', { vpc, instanceType });
+    // const instanceType = ec2.InstanceType.of(ec2.InstanceClass.STANDARD5, ec2.InstanceSize.LARGE);
+    const host = new ec2.BastionHostLinux(this, 'BastionHost', { vpc });
 
     const powerUserAccess = iam.ManagedPolicy.fromManagedPolicyArn(this, "PowerUserAccess", "arn:aws:iam::aws:policy/PowerUserAccess")
     host.role.addManagedPolicy(powerUserAccess)
