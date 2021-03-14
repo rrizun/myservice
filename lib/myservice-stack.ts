@@ -18,16 +18,20 @@ export class MyserviceStack extends cdk.Stack {
     const myQueue = new sqs.Queue(this, "MyQueue");
     myTopic.addSubscription(new subscriptions.SqsSubscription(myQueue));
 
-    const vpc = new ec2.Vpc(this, "MyVpc", {maxAzs:1})
+    // this.doCompute();
+
+    this.urlOutput = new CfnOutput(this, 'myQueueUrl', {
+      value: myQueue.queueUrl,
+    });
+
+  }
+
+  private doCompute() {
+    const vpc = new ec2.Vpc(this, "MyVpc", { maxAzs: 1 })
     // const instanceType = ec2.InstanceType.of(ec2.InstanceClass.STANDARD5, ec2.InstanceSize.LARGE);
-    const host = new ec2.BastionHostLinux(this, 'BastionHost', { vpc });
+    const host = new ec2.BastionHostLinux(this, 'BastionHost', { vpc, instanceType: new ec2.InstanceType("m5.large") });
 
     const powerUserAccess = iam.ManagedPolicy.fromManagedPolicyArn(this, "PowerUserAccess", "arn:aws:iam::aws:policy/PowerUserAccess")
     host.role.addManagedPolicy(powerUserAccess)
-
-    this.urlOutput = new CfnOutput(this, 'myTopicArn', {
-      value: myTopic.topicArn,
-    });
-
   }
 }
